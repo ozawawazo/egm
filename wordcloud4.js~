@@ -1,0 +1,449 @@
+var w = 960,
+    h = 400;
+
+var focusedTable,
+    areaClassObj,
+    tagTables = {},
+    words = [],
+    max,
+    scale = 1,
+    complete = 0,
+    keyword = "",
+    fontSize = d3.scale.sqrt().range([15, 50]),
+    maxLength = 30,
+    scatter = [],
+    x_name, y_name, cor_data,
+    cor_value,
+    statusText = d3.select("#status");
+
+var layout = d3.layout.cloud()
+    .timeInterval(10)
+    .size([w, h])
+    .fontSize(function(d) { return fontSize(d.count); })
+    .text(function(d) { return d.tag; })
+    .on("end",  draw);//d3.layoutライブラリのメソッドを行う
+
+var svg = d3.select("#vis").append("svg")
+    .attr("width", w)
+    .attr("height", h);
+//クラウドの枠の大きさ決定
+//d3ライブラリ内のid=visの内部にsvg要素を追加
+//width,height属性に値（クラス）w,hを追加
+var svgg = d3.select("#viss").append("svg")
+    .attr("width", 960)
+    .attr("height",50);
+var background = svg.append("g"),
+    vis = svg.append("g")
+    .attr("transform", "translate(" + [w >> 1, h >> 1] + ")");
+//上記のsvgにg要素追加+a
+//クラウドが発生する場所が変わる
+var radioList = document.getElementsByName("column");  
+function draw(data, bounds) {
+  statusText.style("display", "none");
+  //  statusText = d3.select("#status");
+  scale = bounds ? Math.min(
+      w / Math.abs(bounds[1].x - w / 2),
+      w / Math.abs(bounds[0].x - w / 2),
+      h / Math.abs(bounds[1].y - h / 2),
+      h / Math.abs(bounds[0].y - h / 2)) / 2 : 1;
+  //クラウドの大きさをココで決めてる　Math.absはもう一個のjsに入ってる
+  //Math.absは絶対値
+  // yy = (xx >= 10) ? "big" : "small"; 10以上ならbig、それ以下ならsmall
+  //boundsはlayout.js側で説明してる
+  //scaleは下で使う
+  var text = vis.selectAll("text")
+      .data(data, function(d) { return d.text; }); //textにdata(値) d.text(値のキー名)を配置
+  text.transition()
+      .duration(1200)
+  text.enter().append("text")
+      .attr("text-anchor", "middle")
+      .attr("tag", function(d){return d.tag})
+      .attr("transform", function(d) { return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")"; })
+      .attr("correlation", 321)
+      .style({"opacity": 1e-6, "font-size": function(d) { return d.size + "px"; }})//透明度
+      .text(function(d) { return d.name; })//元からあるクラウド表示するやつ,配置と傾き決めるやつ
+      .on("click.a", mapping)
+      .on("click.b", conservation)
+      .on("click.c", plot)
+      .on("click.d", color)
+      .on("mouseover.3", function(d){
+	   d3.select(this)
+	       .style({/*"font-style": "italic",*/ "font-family": "serif"})
+      })
+      .on("mouseout.3", function(d){
+	   d3.select(this)
+	       .style({/*"font-style": "normal",*/ "font-family": "fantasy"})
+      })
+      .transition()
+      .duration(1000)
+      .style("opacity", 1);
+  text.style("font-family", "fantasy")//フォント
+      .style("fill", "#3388aa")//toLowerCase全部小文字,色
+      .text(function(d) { return d.text; });
+  var exitGroup = background.append("g")
+      .attr("transform", vis.attr("transform"));//クラウド部分の枠生成
+  /*  var exitGroupNode = exitGroup.node();
+      text.exit().each(function() {
+         exitGroupNode.appendChild(this);
+      });//何者かわからん 
+      exitGroup.transition()
+      .duration(1000)
+      .style("opacity", 1e-6)
+      .remove();*/
+  vis.transition()
+      .delay(1000)//拡大開始までの時間
+      .duration(750)//クラウドの拡大時間
+      .attr("transform", "translate(" + [w >> 1, h >> 1] + ")scale(" + scale + ")");
+}
+function mapping(d){
+    dd = d.tables[0].data;
+         console.log(d.tables[0]);
+     function drawMap() {
+	var data = new google.visualization.DataTable();
+	data.addRows(49);  //データの行数
+	data.addColumn('string', 'Country');
+	data.addColumn('number' ,d.tables[0].name);
+        for (var i = 0; i < dd.length; i++){
+           data.addRow( [dd[i].name, dd[i].value] );
+	};
+	var options = {};      
+	options['region'] = 'JP'; 
+	if (radioList[0].checked) {
+            var container = document.getElementById('map_canvas');
+	}else{
+            var container = document.getElementById('mapp_canvas');
+	}  
+	var geomap = new google.visualization.GeoMap(container);
+	geomap.draw(data, options);
+     }
+     drawMap();
+}
+function conservation(d){//日本地図1,2に表示されてるデータ名の保存
+var cor = d.tables[0].correlation
+    console.log(cor[0].name);
+	if (radioList[0].checked) {
+	    x_name = d.tag;
+            for (var i = 0; i < cor.length; i++){
+	       if(cor[i].name === y_name){
+		  cor_data = cor[i].value; 
+	       }
+	    }
+	}else{
+	    y_name = d.tag;
+            for (var i = 0; i < cor.length; i++){
+	       if(cor[i].name === x_name){
+		  cor_data = cor[i].value; 
+	       }
+	    }
+	}
+}
+function color(){//タグに決定係数をもとに色付けする
+      words.forEach(function(dd){
+	var cor = dd.tables[0].correlation,
+	     c = d3.interpolateRgb(d3.rgb("rgb(255,0,0)"), d3.rgb("rgb(0, 0, 255)"));
+	if (radioList[0].checked) {
+         for (var i = 0; i < cor.length; i++){
+	    if(cor[i].name === y_name){
+		cor_value = cor[i].value; 
+	    }
+	 }
+	}else{
+         for (var i = 0; i < cor.length; i++){
+	    if(cor[i].name === x_name){
+		cor_value = cor[i].value; 
+	    }
+	 }
+	}
+	 var a = c(cor_value),
+             text = vis.selectAll("text");
+         for (var i = 0; i < cor.length; i++){
+	     if(text[0][i].textContent === dd.tag){
+		 text[0][i].style.fill = a;    
+	     }
+	 }
+      })
+	  gradient = svgg.append("svg:defs")
+	  .append("svg:linearGradient")
+	     .attr("id", "gradient")
+	     .attr("x1", "0%")
+	     .attr("y1", "0%")
+	     .attr("x2", "100%")
+	     .attr("y2", "0%")
+
+	  gradient.append("svg:stop")
+	     .attr("offset", "0%")
+	     .attr("stop-color", "#ff0000")
+	     .attr("stop-opacity", 1)
+
+	  gradient.append("svg:stop")
+	     .attr("offset", "100%")
+	     .attr("stop-color", "#0000ff")
+	     .attr("stop-opacity", 1)
+  
+	  svgg.append("rect")
+	     .attr("width", 200)
+	     .attr("height", 15)
+	     .attr("fill", "url(#gradient)")
+
+	  svgg.append("text")
+             .attr({'class': 'label', 'x': 15, 'y': 30})
+             .style("text-anchor", "end")
+             .text("Min");
+	  svgg.append("text")
+             .attr({'class': 'label', 'x': 120, 'y': 30})
+             .style("text-anchor", "end")
+          .call(function(selection) {
+             selection.append("tspan")
+                   .text("決定係数R");
+             selection.append("tspan")
+                   .attr("baseline-shift", "super")
+                   .text(2);
+          });
+	  svgg.append("text")
+             .attr({'class': 'label', 'x': 200, 'y': 30})
+             .style("text-anchor", "end")
+             .text("Max");
+}
+
+d3.json('StaticTables3.json', function(d) {
+	//	console.log(d);
+  d.table_info.forEach(function(dd) {
+      if (tagTables[dd.tags] === undefined) {
+         tagTables[dd.tags] = [];
+      }
+      tagTables[dd.tags].push({
+         name: dd.table_name,
+	 data: dd.data,
+	 correlation: dd.correlation,
+	 cor: 0
+      });
+  });
+
+  for (var tag in tagTables) {
+    words.push({
+      tag: tag,
+      count: tagTables[tag].length,
+      tables: tagTables[tag]
+    });
+  }
+  words.sort(function(word1, word2) {
+    return word2.count - word1.count;
+  });
+
+  fontSize.domain(d3.extent(words, function(w) {return w.count;}));
+  layout.stop()
+    .words(words.slice(0, 250))
+    .start();
+});
+
+   var margin = {top: 20, right: 20, bottom: 60, left: 90},
+       widthh = 960 - margin.left - margin.right,
+       heightt = 500 - margin.top - margin.bottom;
+   var x = d3.scale.linear()
+       .range([0, widthh]);
+   var y = d3.scale.linear()
+       .range([heightt, 0]);
+   var xAxis = d3.svg.axis()
+       .scale(x)
+       .orient("bottom");
+   var yAxis = d3.svg.axis()
+       .scale(y)
+       .orient("left");
+
+   var svg = d3.select("body").append("svg")
+       .attr("width", widthh + margin.left + margin.right)
+       .attr("height", heightt + margin.top + margin.bottom)
+       .append("g")
+       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+   var correlation = 0;
+
+function plot(d){
+    console.log(d);
+    var datata = d.tables[0].data;
+  if(scatter.length == 0){//既に配列内にオブジェクトがあるか確かめる
+    if (radioList[0].checked) {
+      datata.forEach(function(dd){
+	scatter.push({
+		name : dd.name,
+		xdata : dd.value,
+		xname : d.tables[0].name
+	})
+      })
+	    radioList[0].checked = false;
+	    radioList[1].checked = true;
+    }else{
+      datata.forEach(function(dd){
+	scatter.push({
+		name : dd.name,
+		ydata : dd.value,
+		yname : d.tables[0].name
+	})
+      })
+    }
+  }else{
+    if (radioList[0].checked) {
+      scatter.forEach(function(dd){
+	 datata.forEach(function(ddd){
+	    if(ddd.name === dd.name){
+	    dd.xdata = ddd.value;
+	    dd.xname = d.tables[0].name;
+	    }
+	 })
+      })
+	    radioList[0].checked = false;
+	    radioList[1].checked = true;
+    }else{
+      scatter.forEach(function(dd){
+         datata.forEach(function(ddd){
+	    if(ddd.name === dd.name){
+	    dd.ydata = ddd.value;
+	    dd.yname = d.tables[0].name;
+	    }
+	 })
+      })
+    }
+  }
+  if(scatter[0].xdata != null && scatter[0].ydata != null){
+     scatter.forEach(function(data) {
+                d.x = +data.xdata;
+                d.y = +data.ydata;
+     });
+	svg.selectAll(".cor").remove();
+        svg.append("g")
+	   .append('text')
+           .attr({'class': 'cor', 'id': 'corLabel', 'x': 550, 'y': 400})
+	   .style({'font-size': '60px', 'font-weight': 'bold', 'fill': '#ddd'})
+           .call(function(selection) {
+               selection.append("tspan")
+                   .text("R");
+               selection.append("tspan")
+                   .attr("baseline-shift", "super")
+                   .text(2);
+               selection.append("tspan")
+                   .text(" = " + cor_data);
+           });
+	console.log(d.tables[0]);
+        x.domain(d3.extent(scatter, function(d) {return d.xdata; })).nice();
+        y.domain(d3.extent(scatter, function(d) {return d.ydata; })).nice();
+	console.log(x.domain()[1]);
+	svg.selectAll(".tick").remove();
+	svg.selectAll(".dot").remove();
+	svg.selectAll(".label").remove();
+	svg.selectAll(".bestfit").remove();
+
+      var a, b, c, d2, d;
+      var avX = 0, avY = 0, sXY = 0, sXX = 0;
+      for (var n = 0; n < scatter.length; n++) {
+	  avX += scatter[n].xdata / scatter.length;
+	  avY += scatter[n].ydata / scatter.length;
+      }
+      for (var n = 0; n < scatter.length; n++) {
+	  sXY += (scatter[n].xdata-avX) * (scatter[n].ydata-avY);
+	  sXX += (scatter[n].xdata-avX) * (scatter[n].xdata-avX);
+	  //	  sYY += (scatter[n].ydata-avY) * (scatter[n].ydata-avY);
+      }
+      a = sXY / sXX;
+      b = avY - a * avX;
+      console.log("a=" + a);
+      console.log("b=" + b);
+      var x1 = 0, y1 = y(b + a * x.domain()[0] );
+      var x2 = x(d3.extent(scatter, function(d) {return d.xdata; })[1]), y2 =  y(a * d3.extent(scatter, function(d) {return d.xdata; })[1] + b);
+      console.log("x1=" + x1);
+      console.log("y1=" + y1);
+      svg.append("g")
+          .append('line')
+          .attr('class', 'bestfit')
+	  .attr({'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2})
+	  .transition()
+	  .duration(1500)
+	  .style({'stroke-width': '10px', 'opacity': 1, 'stroke': '#ddd'});
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + heightt + ")")
+            .call(xAxis)
+            .append("text")
+            .attr({"class": "label", "x": 426, "y": 40})
+            .style({"text-anchor": "middle", 'font-size': '20px', 'font-weight': 'bold'})
+            .text(scatter[0].xname);<!--ここをx軸の名前に変える -->
+        svg.append("g")
+	    .attr("class", "y axis")
+	    .call(yAxis)
+	    .append("text")
+	    .attr({"class": "label", "x": -211, "y": -75, "dy": ".71em", "transform": "rotate(-90)"})
+            .style({"text-anchor": "middle", 'font-size': '20px', 'font-weight': 'bold'})
+	    .text(scatter[0].yname);<!--ここをy軸の名前に変える -->
+        svg.selectAll(".dot")
+	    .data(scatter)
+	    .enter().append("circle")
+	    .attr("class", "dot")
+	    .attr("color", "#99cfff")
+	    .attr("r", 6)
+	    .attr("cx", function(d) { return x(d.xdata); })
+	    .attr("cy", function(d) { return y(d.ydata); })
+	    .style("fill", "#99cfff");
+        svg.selectAll(".dot")
+	    .on("mouseover", function(d){
+		d3.select(this)
+		   .transition()
+		   .attr("r",9);
+		})
+	    .on("mouseout", function(d){
+		    d3.select(this)
+			.transition()
+			.attr("r",6);
+		})
+	svg.selectAll(".dot")
+	    .on("mouseover.2", function(d){
+		    //		    d3.select("text." + d.name).remove();
+               svg.append("g")
+                  .attr("class", "dot")
+	          .append("text")
+		  .attr({'id': d.name, 'x': 20, 'y': 50})
+         	  .style({'font-size': '40px', 'font-weight': 'bold', 'fill': '#ddd'})
+	          .text(d.name + ": x=" + d.xdata + ", y=" + d.ydata );
+	    })
+	    .on("mouseout.2", function(d){
+		    d3.select("text#" + d.name)
+			.transition()
+			.duration(1000)
+			.style("opacity",0)
+			.remove();
+	    });
+
+  }
+};
+
+function paramName(id) {
+  return "cd" + id[0].toUpperCase() + id.slice(1);
+}
+function submitWord() {
+  var formText = d3.select("#word-form input").node();
+  var word = formText.value;
+  d3.csv("writetext.php?word=" + word, function(data) {
+    var sim = {};
+    data.forEach(function (d) {
+      sim[d.word2] = d.similality;
+    });
+    words.forEach(function (word) {
+	    word.similality = sim[word.tag];//なんでこうなるのか分からない、words.word.similality のwordは0,1,2　simのwordはタグ名だから合わない
+            word.count = sim[word.tag] * 10;
+	    console.log(word.tag + ":"+ sim[word.tag]);
+    });
+    var layout = d3.layout.cloud()
+	.fontSize(function(d) { return fontSize(d.count); });
+
+  fontSize.domain(d3.extent(words, function(w) {return w.count;}));
+  layout.stop()
+    .words(words.slice(0, 250))
+    .start();
+  var text = vis.selectAll("text");
+  text.transition()
+      .duration(100)
+      .attr("transform", function(d) { return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")"; })
+      .style("font-size", function(d) { return d.size + "px"; });
+   });
+
+  formText.value = "";
+  return false;
+}
+
