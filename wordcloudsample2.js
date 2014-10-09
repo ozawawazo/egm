@@ -22,14 +22,6 @@ var x = d3.scale.linear()
     .range([0, widthh]);
 var y = d3.scale.linear()
     .range([heightt, 0]);
-/*
-var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom");
-var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left");
-*/
 var svgrabell = d3.select("#visrabel").append("svg")
     .attr("width", w)
     .attr("height", 29)
