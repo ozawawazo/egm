@@ -8,6 +8,7 @@ var focusedTable,
     //    keyword = "",
     fontSize = d3.scale.sqrt().range([15, 90]),
     maxLength = 30;
+//    statusText = d3.select("#status");
 var layout = d3.layout.cloud()
     .timeInterval(100)
     .size([w, h])
@@ -49,10 +50,11 @@ var background = svg.append("g"),
     vis = svg.append("g")
     .attr("transform", "translate(" + [w >> 1, h >> 1] + ")");
 
-var scale = 1;
-//    statusText = d3.select("#status");
+var scale = 1,
+    statusText = d3.select("#status");
+
 function draw(data, bounds) {
-    //    statusText.style("display", "none");
+    statusText.style("display", "none");
     scale = bounds ? Math.min(
 			      w / Math.abs(bounds[1].x - w / 2),
 			      w / Math.abs(bounds[0].x - w / 2),
@@ -61,15 +63,16 @@ function draw(data, bounds) {
 			      ) / 2 : 1;
     var text = vis.selectAll("text")
 	.data(data, function(d) { return d.text; });
+    text.transition()
+	.duration(1000);
     text.enter().append("text")
 	.attr("text-anchor", "middle")
-	.attr("tag", function(d){
-		//		console.log(d);
-		return d.tag})
+	.attr("tag", function(d){return d.tag})
 	.attr("transform", function(d) { return "translate(" + [d.x, d.y] + ")"; })
 	//        .attr("transform", function(d) { return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")"; })
-	//	.attr("correlation", 321)
+	//	.attr("correlation", 1)
 	.style({"font-size": function(d) { return d.size + "px"; }})
+	//        .style({"opacity": 1e-6, "font-size": function(d) { return d.size + "px"; }})
 	.style("cursor", "hand")
 	.text(function(d) { return d.name; })
 	.on("click.1", count)
@@ -85,13 +88,14 @@ function draw(data, bounds) {
 		d3.select(this)
 		    .style({ "font-family": "fantasy"})
 		    }
-	    );
+	    )
+	.transition()
+	.duration(1000)
+	.style("opacity", 1);
     text.style("font-family", "fantasy")
 	.style("fill", "#3498db")
 	.style("font-weight", "bold")
 	.text(function(d) { return d.text; });
-    text.transition()
-        .duration(1000);
     var exitGroup = background.append("g")
 	.attr("transform", vis.attr("transform"));
     vis.transition()
@@ -490,7 +494,7 @@ d3.json('StaticTables4.json', function(d) {
 	words.sort(function(word1, word2) {
 		return word2.count - word1.count;
 	    });
-	console.log(tagTables);
+	
 	fontSize.domain(d3.extent(words, function(w) {return w.count;}));
 	layout.stop()
 	    .words(words.slice(0, 250))
