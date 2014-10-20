@@ -487,7 +487,8 @@ d3.csv('test.csv', function(d) {
 		    }
 	    });
 	namebox.forEach(function(dd) {
-		tagTables[dd.name].push({
+		//		console.log(dd[0][0]);
+		tagTables[dd[0][0]].push({
 			name: "後日挿入予定",
 			data: 0,
 			correlation: dd[1],
@@ -498,7 +499,7 @@ d3.csv('test.csv', function(d) {
 	for (var tag in tagTables) {
 	    words.push({
 		    tag: tag,
-		    count: tagTables[tag].length,
+		    count: tagTables[tag][0].correlation,
 		    tables: tagTables[tag]
 			});
 	}
