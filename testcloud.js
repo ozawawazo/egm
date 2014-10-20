@@ -468,16 +468,29 @@ function color(){//あるデータとの決定係数を抽出し、その値に�
 	)
 }
 
-d3.json('StaticTables4.json', function(d) {
-	console.log(tagTables);
-	d.table_info.forEach(function(dd) {
-		if (tagTables[dd.tags] === undefined) {
-		    tagTables[dd.tags] = [];
-		}
-		tagTables[dd.tags].push({
-			name: dd.table_name,
-			data: dd.data,
-			correlation: dd.correlation,
+//d3.json('StaticTables4.json', function(d) {
+var namebox = [];
+d3.csv('test.csv', function(d) {
+	var count;
+	d.forEach(function(dd) {
+                count = 0;
+                namebox.forEach(function(box){
+                        //                      console.log(box[name]);
+			if (dd.name == box[0]) {
+			    box[1]++;
+			    count = count+1;
+			}
+		    })
+		    if(count == 0){
+			tagTables[dd.name] = [];
+			namebox.push([[dd.name], 1]);
+		    }
+	    });
+	namebox.forEach(function(dd) {
+		tagTables[dd.name].push({
+			name: "後日挿入予定",
+			data: 0,
+			correlation: dd[1],
 			cor: 0
 			    });
 	    });

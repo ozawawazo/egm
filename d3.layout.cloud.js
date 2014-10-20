@@ -18,7 +18,7 @@
 	    cloud = {};
 	
 	cloud.start = function() {
-	    //	console.log(words);
+	    console.log(zeroArray);
 	    var board = zeroArray((size[0] >> 5) * size[1]),
 	    bounds = null,
 	    n = words.length,
@@ -42,7 +42,7 @@
 	    if (timer) clearInterval(timer);//メソッドの繰り返し処理を停止
 	    timer = setInterval(step, 0); //関数stepを0ミリ秒間隔で呼び出す
 	    step();
-	    console.log(cloud);
+	    //	    console.log(cloud);
 	    return cloud;//cloud.start関数の返り値
 	    
 	    function step() {
@@ -139,67 +139,68 @@
     cloud.words = function(x) {//wordsに覚悟を挿入
 	if (!arguments.length) return words;
 	words = x;
+	//	console.log(words);
 	return cloud;
     };
-    
+
     cloud.size = function(x) {//wordsにクラウドの形サイズ挿入
-	console.log( [+x[0], +x[1]]);
+	//	console.log( [+x[0], +x[1]]);
 	if (!arguments.length) return size;
 	size = [+x[0], +x[1]];
 	return cloud;
     };
     
-    cloud.font = function(x) {
-        console.log(d3.functor(x));
+    cloud.font = function(x) {//unused
+	//        console.log(d3.functor(x));
  	if (!arguments.length) return font;
 	font = d3.functor(x);
 	return cloud;
     };
     
-    cloud.fontStyle = function(x) {
-        console.log(d3.functor(x));
+    cloud.text = function(x) {
+        //        console.log(d3.functor(x));
+        if (!arguments.length) return text;
+        text = d3.functor(x);
+        return cloud;
+    };
+
+    cloud.fontSize = function(x) {
+        //        console.log(d3.functor(x));
+        if (!arguments.length) return fontSize;
+        fontSize = d3.functor(x);
+        return cloud;
+    };
+
+    cloud.fontStyle = function(x) {//unused
+	//        console.log(d3.functor(x));
 	if (!arguments.length) return fontStyle;
 	fontStyle = d3.functor(x);
 	return cloud;
     };
     
-    cloud.fontWeight = function(x) {
-        console.log(d3.functor(x));
+    cloud.fontWeight = function(x) {//unused
+	//        console.log(d3.functor(x));
  	if (!arguments.length) return fontWeight;
 	fontWeight = d3.functor(x);
 	return cloud;
     };
     
-    cloud.rotate = function(x) {
-        console.log( d3.functor(x));
+    cloud.rotate = function(x) {//unused
+	//        console.log( d3.functor(x));
  	if (!arguments.length) return rotate;
 	rotate = d3.functor(x);
 	return cloud;
     };
     
-    cloud.text = function(x) {
-        console.log(d3.functor(x));
- 	if (!arguments.length) return text;
-	text = d3.functor(x);
-	return cloud;
-    };
-    
-    cloud.spiral = function(x) {
-        console.log(spiral[x + ""] || x);
+    cloud.spiral = function(x) {//unused
+	//        console.log(spiral[x + ""] || x);
  	if (!arguments.length) return spiral;
 	spiral = spirals[x + ""] || x;
 	return cloud;
     };
     
-    cloud.fontSize = function(x) {
-        console.log(d3.functor(x));
- 	if (!arguments.length) return fontSize;
-	fontSize = d3.functor(x);
-	return cloud;
-    };
-    
-    cloud.padding = function(x) {
-        console.log(d3.functor(x));
+    cloud.padding = function(x) {//unused
+	//        console.log(d3.functor(x));
  	if (!arguments.length) return padding;
 	padding = d3.functor(x);
 	return cloud;

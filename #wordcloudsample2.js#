@@ -469,14 +469,13 @@ function color(){//あるデータとの決定係数を抽出し、その値に�
 }
 
 d3.json('StaticTables4.json', function(d) {
-	console.log(tagTables);
 	d.table_info.forEach(function(dd) {
 		if (tagTables[dd.tags] === undefined) {
 		    tagTables[dd.tags] = [];
 		}
 		tagTables[dd.tags].push({
 			name: dd.table_name,
-			data: dd.data,
+			data: 0,
 			correlation: dd.correlation,
 			cor: 0
 			    });
