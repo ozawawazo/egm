@@ -31,7 +31,7 @@
 		    d.font = font.call(this, d, i);
 		    d.style = fontStyle.call(this, d, i);
 		    d.weight = fontWeight.call(this, d, i);
-		    d.rotate = 0;
+		    d.rotate = rotate.call(this, d, i);
 		    d.size = fontSize.call(this, d, i);//文字の大きさ決定
 		    d.padding = padding.call(this, d, i);//これが戻り値
 		    return d;
@@ -186,7 +186,7 @@
     };
     
     cloud.rotate = function(x) {//unused
-	//        console.log( d3.functor(x));
+	console.log( d3.functor(x));
  	if (!arguments.length) return rotate;
 	rotate = d3.functor(x);
 	return cloud;
@@ -226,7 +226,7 @@
     }
     
     function cloudRotate() {
-	return (~~(Math.random() * 6) - 3) * 30;
+	return (~~(Math.random() * 6) - 3) * 20;
     }
     
     function cloudPadding() {
@@ -387,7 +387,7 @@
 	return a;
     }
     
-    var cloudRadians = Math.PI / 180,
+    var cloudRadians = Math.PI / 180,//Math.PI=3.1415
 	cw = 1 << 11 >> 5,
 	ch = 1 << 11,
 	canvas,

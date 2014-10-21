@@ -3,10 +3,7 @@ var w = window.innerWidth - 40,
 var focusedTable,
     areaClassObj,
     tagTables = {},
-    //    words = [],
-    //    complete = 0,
-    //    keyword = "",
-    fontSize = d3.scale.sqrt().range([15, 90]),
+    fontSize = d3.scale.sqrt().range([5, 90]),
     maxLength = 30;
 var layout = d3.layout.cloud()
     .timeInterval(100)
@@ -66,8 +63,8 @@ function draw(data, bounds) {
 	.attr("tag", function(d){
 		//		console.log(d);
 		return d.tag})
-	.attr("transform", function(d) { return "translate(" + [d.x, d.y] + ")"; })
-	//        .attr("transform", function(d) { return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")"; })
+	//.attr("transform", function(d) { return "translate(" + [d.x, d.y] + ")"; })
+	.attr("transform", function(d) { return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")"; })
 	//	.attr("correlation", 321)
 	.style({"font-size": function(d) { return d.size + "px"; }})
 	.style("cursor", "hand")
@@ -488,7 +485,7 @@ d3.csv('test.csv', function(d) {
 	    });
 	namebox.forEach(function(dd) {
 		//		console.log(dd[0][0]);
-		tagTables[dd[0][0]].push({
+		tagTables[dd[0][0]].push({//品詞、元の文書情報
 			name: "後日挿入予定",
 			data: 0,
 			correlation: dd[1],
