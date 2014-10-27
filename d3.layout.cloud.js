@@ -226,7 +226,8 @@
     }
     
     function cloudRotate() {
-	return (~~(Math.random() * 6) - 3) * 20;
+	return Math.floor( Math.random() * 2 )*90 -45 
+	//	return (~~(Math.random() * 6) - 3) * 20;//角度のレンジを設定
     }
     
     function cloudPadding() {
