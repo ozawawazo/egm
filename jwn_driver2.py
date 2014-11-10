@@ -1,6 +1,6 @@
 import sys
-fin1 = "sample.txt"
-fin2 = "sample2.txt"
+fin1 = "test_sim.txt"
+fin2 = "test_sim.txt"
 fout = "test_out.txt"
  
 import sim2

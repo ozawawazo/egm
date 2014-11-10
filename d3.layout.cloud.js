@@ -18,7 +18,6 @@
 	    cloud = {};
 	
 	cloud.start = function() {
-	    console.log(zeroArray);
 	    var board = zeroArray((size[0] >> 5) * size[1]),
 	    bounds = null,
 	    n = words.length,
@@ -186,7 +185,6 @@
     };
     
     cloud.rotate = function(x) {//unused
-	console.log( d3.functor(x));
  	if (!arguments.length) return rotate;
 	rotate = d3.functor(x);
 	return cloud;

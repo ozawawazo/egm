@@ -37,7 +37,7 @@ var svgrabell = d3.select("#visrabel").append("svg")
     .append("text")
     .attr({'x': 20, 'y': 25, 'font-size': 25, 'font-weight': 'bold', 'fill': '#ecf0f1'})
     .style("text-anchor", "start")
-    .text("データ一覧:");
+    .text("タグ一覧");
 var svg = d3.select("#vis").append("svg")
     .attr("width", w-5)
     .attr("height", h)
@@ -226,7 +226,6 @@ d3.csv('test_unidic.csv', function(d) {
 	d.forEach(function(dd) {
                 count = 0;
                 namebox.forEach(function(box){
-                        //                      console.log(box[name]);
 			if (dd.name == box[0]) {
 			    box[1]++;
 			    count = count+1;
@@ -237,8 +236,28 @@ d3.csv('test_unidic.csv', function(d) {
 			namebox.push([[dd.name], 1]);
 		    }
 	    });
+	console.log(namebox);
+	var hogee = [];
+	namebox.forEach(function(ddd){
+		hogee.push(ddd[0][0]);
+	    });
+	var send_data= JSON.stringify(hogee);
+
+	$.ajax({
+		type: "POST",
+		url: "text_write.php",
+		    //		contentType: "Content-Type: application/json; charset=UTF-8",
+		cache: false,
+		data: {item : send_data},
+		success: function(html){
+		    console.log(html);
+		}
+	    });
+
+	//nameboxの文字列で類似度計算
+	//tagTableに類似度結果をpush
+
 	namebox.forEach(function(dd) {
-		//		console.log(dd[0][0]);
 		tagTables[dd[0][0]].push({//品詞、元の文書情報
 			name: "後日挿入予定",
 			data: 0,
@@ -246,7 +265,6 @@ d3.csv('test_unidic.csv', function(d) {
 			cor: 0
 			    });
 	    });
-	console.log(tagTables);
 	for (var tag in tagTables) {
 	    words.push({
 		    tag: tag,
@@ -254,12 +272,9 @@ d3.csv('test_unidic.csv', function(d) {
 		    tables: tagTables[tag]
 			});
 	}
-	console.log(words);
 	words.sort(function(word1, word2) {
 		return word2.count - word1.count;
 	    });
-	console.log(fontSize.domain(d3.extent(words, function(w) {return w.count;})));
-	console.log(layout);
 	fontSize.domain(d3.extent(words, function(w) {return w.count;}));//この関数はreturn Math.sqrt(d.value)
 	layout.stop()
 	    .words(words.slice(0, 250))

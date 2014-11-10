@@ -28,7 +28,7 @@ def calcSim(synList1,synList2):
   return simMatrix
  
 def writeSim(wordList1, wordList2, simMatrix,fout):
-  f = open("sample4.txt","w")
+  f = open(fout,"w")
   f.write('word1,word2,similality\n')
   count = 0
   for i in range(len(wordList1)):
