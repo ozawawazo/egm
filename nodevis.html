@@ -17,26 +17,23 @@ body {
   stroke: #000;
 }
 </style>
-<title>TaNVis</title>
+<title>nodevis</title>
 </head>
 <body bgcolor="#FFFAFA">
 <font size="5" face="MSゴシック" color="#3498db"><b>ネットワーク図のラベル可視化</b></font></br></br>
-
-    <form id="word-form" onSubmit="return submitWord();">
-        <input type="submit" value="詳細"/>
-        <input type="submit" value="通常"/>
-    </form>
-    <div id="visrabel"></div>
+<form id="word-form" onSubmit="return submitWord();">
+    <input type="submit" value="詳細"/>
+    <input type="submit" value="通常"/>
+</form>
+<div id="visrabel"></div>
 <div id="inbody">
     <div id="vis"></div>
 </div>
-    <div id="visss"></div>
-<script type="text/javascript">
 
-</script>
+<script type="text/javascript"></script>
 <script src="http://d3js.org/d3.v3.js"></script>
 <script src="d3.layout.cloud.js"></script>
-<script src="testcloud.js"></script>
+<script src="nodevis.js"></script>
 <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 
 </body>

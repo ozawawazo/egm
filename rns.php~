@@ -1,0 +1,25 @@
+<?php
+ 
+#$page = $_POST[item];
+$sample = "hoge";
+print $sample;
+echo json_encode($sample);
+
+$fp = fopen('rns.csv', 'ab');
+
+if ($fp){
+  if (flock($fp, LOCK_EX)){
+    if (fwrite($fp,  $sample) === FALSE){
+      print('ファイル書き込みに失敗しました');
+    }else{
+      print($sample.'をファイルに書き込みました');
+    }
+    flock($fp, LOCK_UN);
+  }else{
+    print('ファイルロックに失敗しました');
+  }
+}
+
+fclose($fp);
+ 
+?>

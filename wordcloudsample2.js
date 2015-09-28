@@ -53,6 +53,7 @@ var scale = 1;
 //    statusText = d3.select("#status");
 function draw(data, bounds) {
     //    statusText.style("display", "none");
+    console.log(data);
     scale = bounds ? Math.min(
 			      w / Math.abs(bounds[1].x - w / 2),
 			      w / Math.abs(bounds[0].x - w / 2),

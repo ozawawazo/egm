@@ -246,12 +246,8 @@ d3.csv('test_unidic.csv', function(d) {
 	$.ajax({
 		type: "POST",
 		url: "text_write.php",
-		    //		contentType: "Content-Type: application/json; charset=UTF-8",
 		cache: false,
-		data: {item : send_data},
-		success: function(html){
-		    console.log(html);
-		}
+		data: {item : send_data}
 	    });
 
 	//nameboxの文字列で類似度計算

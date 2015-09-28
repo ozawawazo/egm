@@ -6,6 +6,7 @@ def convWords2Synsets(wordList1, wordList2):
   synLists = [[ ],[ ]]
   wordLists = [wordList1, wordList2]
   for i in [0,1]:
+    print i;
     for j in range(len(wordLists[i])):
       synLists[i].append(jwn.synsets(wordLists[i][j]))
   return synLists
@@ -13,8 +14,9 @@ def convWords2Synsets(wordList1, wordList2):
 def calcSim(synList1,synList2):
   import numpy as np
   simMatrix = np.zeros( (len(synList1), len(synList2)))
-  count = 0
+  count = 1
   for i in range(len(synList1)):
+    print i;
     for j in range(len(synList2)):
       if j < count:
         continue
@@ -29,11 +31,15 @@ def calcSim(synList1,synList2):
  
 def writeSim(wordList1, wordList2, simMatrix,fout):
   f = open(fout,"w")
-  f.write('word1,word2,similality\n')
-  count = 0
+#  f.write('word1,word2,similality\n')
+  count = 1
   for i in range(len(wordList1)):
     for j in range(len(wordList2)):
       if j < count:
         continue
-      f.write(wordList1[i].encode('utf-8')+ "," + wordList2[j].encode('utf-8') +"," + str(simMatrix[i][j])+"\n")
+      if simMatrix[i][j] < 0.51:
+        continue
+      if str(simMatrix[i][j]) == str("nan"):
+        continue
+      f.write(wordList1[i].encode('utf-8')+ ":[" + wordList2[j].encode('utf-8') +":" + str(simMatrix[i][j])+"]\n")
     count = count + 1

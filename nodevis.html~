@@ -33,7 +33,7 @@ body {
 <script type="text/javascript"></script>
 <script src="http://d3js.org/d3.v3.js"></script>
 <script src="d3.layout.cloud.js"></script>
-<script src="testcloud.js"></script>
+<script src="nodevis.js"></script>
 <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 
 </body>
